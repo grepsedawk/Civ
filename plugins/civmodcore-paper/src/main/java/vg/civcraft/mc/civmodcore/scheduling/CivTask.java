@@ -13,7 +13,8 @@ public interface CivTask {
     boolean isCancelled();
 
     static CivTask wrap(final ScheduledTask task) {
-        return new ScheduledCivTask(task);
+        // EntityScheduler.run*/ returns null when the entity was retired before the task could be scheduled.
+        return task == null ? NoOpCivTask.INSTANCE : new ScheduledCivTask(task);
     }
 
     record ScheduledCivTask(ScheduledTask task) implements CivTask {
@@ -26,6 +27,21 @@ public interface CivTask {
         @Override
         public boolean isCancelled() {
             return this.task.isCancelled();
+        }
+
+    }
+
+    record NoOpCivTask() implements CivTask {
+
+        static final NoOpCivTask INSTANCE = new NoOpCivTask();
+
+        @Override
+        public void cancel() {
+        }
+
+        @Override
+        public boolean isCancelled() {
+            return true;
         }
 
     }

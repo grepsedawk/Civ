@@ -2,9 +2,9 @@ package vg.civcraft.mc.civmodcore.players;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
 import org.bukkit.Bukkit;
@@ -20,7 +20,9 @@ import vg.civcraft.mc.civmodcore.scheduling.CivScheduler;
 
 public final class PlayerNames implements Listener {
 
-    private static final Set<String> names = new HashSet<>();
+    // Concurrent: the async-seed task writes on the global region thread while the login handler and external
+    // getPlayerNames() callers touch it from connection/region threads under Folia.
+    private static final Set<String> names = ConcurrentHashMap.newKeySet();
 
     public PlayerNames(Plugin plugin) {
         names.clear();

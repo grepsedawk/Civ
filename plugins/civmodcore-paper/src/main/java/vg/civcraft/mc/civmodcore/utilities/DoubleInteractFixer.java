@@ -3,8 +3,8 @@ package vg.civcraft.mc.civmodcore.utilities;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -16,7 +16,8 @@ public class DoubleInteractFixer {
     private Map<UUID, List<Location>> locations;
 
     public DoubleInteractFixer(Plugin plugin) {
-        locations = new TreeMap<>();
+        // Folia: interact events run on per-region threads, the clear timer on the global thread.
+        locations = new ConcurrentHashMap<>();
         CivScheduler.runGlobalTimer(plugin, () -> locations.clear(), 1L, 1L);
     }
 

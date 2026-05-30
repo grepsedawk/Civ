@@ -3,8 +3,8 @@ package vg.civcraft.mc.civmodcore.players.scoreboard.bottom;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.TreeMap;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiFunction;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -21,7 +21,9 @@ public class BottomLine implements Comparable<BottomLine> {
     BottomLine(String identifier, int priority) {
         this.identifier = identifier;
         this.priority = priority;
-        this.texts = new TreeMap<>();
+        // Mutated by event handlers on region/entity threads while the updatePeriodically task iterates it
+        // on the global thread under Folia; UUID keys are never sorted, so a hash map is enough.
+        this.texts = new ConcurrentHashMap<>();
     }
 
     public String getIdentifier() {

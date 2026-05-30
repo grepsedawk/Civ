@@ -3,8 +3,8 @@ package vg.civcraft.mc.civmodcore.players.scoreboard.side;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.TreeMap;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiFunction;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -23,7 +23,8 @@ public class CivScoreBoard {
 
     CivScoreBoard(String scoreName) {
         this.scoreName = scoreName;
-        this.currentScoreText = new TreeMap<>();
+        // Updater runs on the global region thread while set/hide/purge mutate from player region threads on Folia.
+        this.currentScoreText = new ConcurrentHashMap<>();
     }
 
     public String getName() {
