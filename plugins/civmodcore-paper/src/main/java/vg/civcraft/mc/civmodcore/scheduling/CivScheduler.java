@@ -21,6 +21,9 @@ public final class CivScheduler {
 
     private static final long MILLIS_PER_TICK = 50L;
 
+    private static final Runnable NO_OP = () -> {
+    };
+
     private CivScheduler() {
     }
 
@@ -99,6 +102,10 @@ public final class CivScheduler {
     }
 
     // --- ENTITY (retiredFallback runs if entity removed before task) ---
+
+    public static void runEntity(final Entity entity, final Runnable task) {
+        runEntity(entity, task, NO_OP);
+    }
 
     public static void runEntity(final Entity entity, final Runnable task, final Runnable retiredFallback) {
         entity.getScheduler().run(plugin(), ignoreHandle(task), retiredFallback);

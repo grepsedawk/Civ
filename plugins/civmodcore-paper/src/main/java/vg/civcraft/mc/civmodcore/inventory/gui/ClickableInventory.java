@@ -196,7 +196,7 @@ public class ClickableInventory {
                 CivScheduler.runEntity(p, () -> {
                     p.openInventory(inventory);
                     openInventories.put(p.getUniqueId(), this);
-                }, () -> {});
+                });
             } else {
                 p.openInventory(inventory);
                 openInventories.put(p.getUniqueId(), this);
