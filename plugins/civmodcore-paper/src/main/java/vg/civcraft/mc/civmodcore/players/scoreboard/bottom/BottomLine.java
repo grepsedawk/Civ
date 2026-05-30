@@ -8,14 +8,14 @@ import java.util.UUID;
 import java.util.function.BiFunction;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
-import vg.civcraft.mc.civmodcore.CivModCorePlugin;
+import vg.civcraft.mc.civmodcore.scheduling.CivScheduler;
+import vg.civcraft.mc.civmodcore.scheduling.CivTask;
 
 public class BottomLine implements Comparable<BottomLine> {
 
     private Map<UUID, String> texts;
     private String identifier;
-    private BukkitRunnable updater;
+    private CivTask updater;
     private int priority;
 
     BottomLine(String identifier, int priority) {
@@ -44,30 +44,25 @@ public class BottomLine implements Comparable<BottomLine> {
         if (updater != null) {
             updater.cancel();
         }
-        updater = new BukkitRunnable() {
-
-            @Override
-            public void run() {
-                Iterator<Entry<UUID, String>> iter = texts.entrySet().iterator();
-                while (iter.hasNext()) {
-                    Entry<UUID, String> entry = iter.next();
-                    Player player = Bukkit.getPlayer(entry.getKey());
-                    if (player != null) {
-                        String newText = updateFunction.apply(player, entry.getValue());
-                        if (newText == null) {
-                            iter.remove();
-                            BottomLineAPI.refreshIndividually(player.getUniqueId());
-                            continue;
-                        }
-                        if (!newText.equals(entry.getValue())) {
-                            entry.setValue(newText);
-                            BottomLineAPI.refreshIndividually(player.getUniqueId());
-                        }
+        updater = CivScheduler.runGlobalTimer(() -> {
+            Iterator<Entry<UUID, String>> iter = texts.entrySet().iterator();
+            while (iter.hasNext()) {
+                Entry<UUID, String> entry = iter.next();
+                Player player = Bukkit.getPlayer(entry.getKey());
+                if (player != null) {
+                    String newText = updateFunction.apply(player, entry.getValue());
+                    if (newText == null) {
+                        iter.remove();
+                        BottomLineAPI.refreshIndividually(player.getUniqueId());
+                        continue;
+                    }
+                    if (!newText.equals(entry.getValue())) {
+                        entry.setValue(newText);
+                        BottomLineAPI.refreshIndividually(player.getUniqueId());
                     }
                 }
             }
-        };
-        updater.runTaskTimer(CivModCorePlugin.getInstance(), delay, delay);
+        }, delay, delay);
     }
 
     public void removePlayer(Player player) {

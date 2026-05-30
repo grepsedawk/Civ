@@ -16,6 +16,7 @@ import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
+import vg.civcraft.mc.civmodcore.scheduling.CivScheduler;
 
 public final class PlayerNames implements Listener {
 
@@ -23,13 +24,13 @@ public final class PlayerNames implements Listener {
 
     public PlayerNames(Plugin plugin) {
         names.clear();
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+        CivScheduler.runAsync(plugin, () -> {
             OfflinePlayer[] players = Bukkit.getOfflinePlayers();
             List<String> namesList = Stream.of(players)
                 .map(OfflinePlayer::getName)
                 .filter(StringUtils::isNotBlank)
                 .toList();
-            Bukkit.getScheduler().runTask(plugin, () -> {
+            CivScheduler.runGlobal(plugin, () -> {
                 names.addAll(namesList);
             });
         });

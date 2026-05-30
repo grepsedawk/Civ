@@ -2,8 +2,8 @@ package vg.civcraft.mc.civmodcore.utilities.cooldowns;
 
 import java.util.HashMap;
 import java.util.Map;
-import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
+import vg.civcraft.mc.civmodcore.scheduling.CivScheduler;
 
 /**
  * Cooldown implementation that keeps track of objects in ticks. The value given in the constructor is assumed to be in
@@ -24,7 +24,7 @@ public class TickCoolDownHandler<E> implements ICoolDownHandler<E> {
     public TickCoolDownHandler(JavaPlugin executingPlugin, long cooldown) {
         this.cooldown = cooldown;
         cds = new HashMap<>();
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(executingPlugin, () -> {
+        CivScheduler.runGlobalTimer(executingPlugin, () -> {
             tickCounter++; // increment every tick
         }, 1L, 1L);
     }

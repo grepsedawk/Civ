@@ -5,11 +5,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.UUID;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
+import vg.civcraft.mc.civmodcore.scheduling.CivScheduler;
 
 public class DoubleInteractFixer {
 
@@ -17,7 +17,7 @@ public class DoubleInteractFixer {
 
     public DoubleInteractFixer(Plugin plugin) {
         locations = new TreeMap<>();
-        Bukkit.getScheduler().runTaskTimer(plugin, () -> locations.clear(), 1L, 1L);
+        CivScheduler.runGlobalTimer(plugin, () -> locations.clear(), 1L, 1L);
     }
 
     /**
